@@ -15,9 +15,11 @@ from sqlalchemy.engine import Row
 from .config import get_settings
 from .db import admin_users, as_utc, inquiries, inquiry_events, transaction, utcnow
 from .guards import enforce, record
+from .rates import get_board, save_board
 from .schemas import (
     STATUS_LABELS,
     AdminOut,
+    RateBoardIn,
     DailyCount,
     InquiryDetail,
     InquiryEventOut,
@@ -158,6 +160,22 @@ async def stats(admin: Admin = Depends(current_admin)) -> Stats:
         last_30_days=len(recent),
         daily=[DailyCount(date=d.isoformat(), count=c) for d, c in buckets.items()],
     )
+
+
+# ---------------------------------------------------------------- published rates
+
+@router.get("/rates")
+async def get_rates(admin: Admin = Depends(current_admin)) -> dict:
+    async with transaction() as conn:
+        return await get_board(conn)
+
+
+@router.put("/rates", dependencies=[Depends(require_csrf_header)])
+async def put_rates(body: RateBoardIn, admin: Admin = Depends(current_admin)) -> dict:
+    if body.is_published and body.cny_ngn is None and body.usd_ngn is None:
+        raise HTTPException(400, "Enter at least one rate before publishing.")
+    async with transaction() as conn:
+        return await save_board(conn, body.model_dump(), admin.email)
 
 
 # ---------------------------------------------------------------- enquiries

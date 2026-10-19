@@ -215,5 +215,28 @@ def test_delete_inquiry(admin):
     assert admin.delete(f"/api/v1/admin/inquiries/{item_id}", headers=CSRF).status_code == 404
 
 
+def test_retention_purges_stale_enquiries_but_keeps_completed(admin):
+    import asyncio
+    from datetime import timedelta
+
+    from sqlalchemy import update
+
+    from jkj.db import inquiries, transaction, utcnow
+    from jkj.guards import prune
+
+    _seed(admin, 3)
+    items = admin.get("/api/v1/admin/inquiries").json()["items"]
+    admin.patch(f"/api/v1/admin/inquiries/{items[0]['id']}", json={"status": "completed"}, headers=CSRF)
+
+    async def age_all_and_prune():
+        async with transaction() as conn:
+            await conn.execute(update(inquiries).values(updated_at=utcnow() - timedelta(days=800)))
+            await prune(conn)
+
+    asyncio.run(age_all_and_prune())
+    remaining = admin.get("/api/v1/admin/inquiries").json()["items"]
+    assert [r["id"] for r in remaining] == [items[0]["id"]]
+
+
 def test_admin_responses_are_not_cached(admin):
     assert admin.get("/api/v1/admin/me").headers["cache-control"] == "no-store"

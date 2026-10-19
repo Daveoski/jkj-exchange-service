@@ -15,6 +15,7 @@ from .config import get_settings
 from .db import DatabaseUnavailable, inquiries, inquiry_events, transaction
 from .emails import send_inquiry_emails
 from .guards import enforce, prune, record, verify_turnstile
+from .rates import get_board, market_rates, public_board
 from .schemas import InquiryCreated, InquiryIn
 from .security import client_ip, fingerprint
 
@@ -47,6 +48,25 @@ async def health(response: Response):
         "email": "configured" if settings.resend_api_key else "disabled",
         "turnstile": "enabled" if settings.turnstile_secret_key else "disabled",
     }
+
+
+@router.get("/rates")
+async def rates(response: Response):
+    """Market reference rates plus JKJ's published indicative rates (if any)."""
+    market = await market_rates()
+    jkj = None
+    try:
+        async with transaction() as conn:
+            jkj = public_board(await get_board(conn))
+    except DatabaseUnavailable:
+        pass  # market rates are still useful on their own
+    if market is None and jkj is None:
+        response.status_code = 503
+        response.headers["Cache-Control"] = "no-store"
+        return {"detail": "Exchange rates are temporarily unavailable."}
+    # Short browser cache, longer CDN cache; JKJ rate edits appear within a few minutes.
+    response.headers["Cache-Control"] = "public, max-age=60, s-maxage=300, stale-while-revalidate=1800"
+    return {"market": market, "jkj": jkj}
 
 
 @router.post("/inquiries", status_code=201, response_model=InquiryCreated)

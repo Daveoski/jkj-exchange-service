@@ -11,7 +11,7 @@ export function SiteHeader(){
  useEffect(()=>setOpen(false),[path]);
  useEffect(()=>{const onScroll=()=>setScrolled(window.scrollY>8);onScroll();window.addEventListener('scroll',onScroll,{passive:true});return()=>window.removeEventListener('scroll',onScroll)},[]);
  useEffect(()=>{if(!open)return;const onKey=(e:KeyboardEvent)=>{if(e.key==='Escape')setOpen(false)};window.addEventListener('keydown',onKey);return()=>window.removeEventListener('keydown',onKey)},[open]);
- return <header className={`sticky top-0 z-50 border-b bg-white/90 backdrop-blur-xl transition-shadow ${scrolled?'border-slate-200 shadow-[0_8px_30px_rgba(7,20,37,.06)]':'border-transparent'}`}>
+ return <header className={`sticky top-0 z-50 border-b print:hidden bg-white/90 backdrop-blur-xl transition-shadow ${scrolled?'border-slate-200 shadow-[0_8px_30px_rgba(7,20,37,.06)]':'border-transparent'}`}>
   <div className="mx-auto flex h-[74px] max-w-7xl items-center justify-between gap-5 px-5 md:px-8">
    <BrandLogo/>
    <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">{nav.map(n=>{const active=isActive(path,n.href);return <Link aria-current={active?'page':undefined} className={`link-focus relative rounded-full px-4 py-2 text-sm font-semibold transition ${active?'text-midnight':'text-slate-500 hover:text-midnight'}`} href={n.href} key={n.href}>{n.label}{active&&<span className="absolute inset-x-4 -bottom-0.5 h-0.5 rounded-full bg-gold"/>}</Link>})}</nav>

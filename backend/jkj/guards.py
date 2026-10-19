@@ -13,7 +13,7 @@ from sqlalchemy import delete, func, insert, select
 from sqlalchemy.ext.asyncio import AsyncConnection
 
 from .config import get_settings
-from .db import rate_events, utcnow
+from .db import inquiries, inquiry_events, rate_events, utcnow
 from .security import fingerprint
 
 log = logging.getLogger("jkj")
@@ -46,9 +46,23 @@ async def enforce(conn: AsyncConnection, bucket: str, key: str, limit: int, wind
         raise HTTPException(429, message)
 
 
+ENQUIRY_RETENTION = timedelta(days=730)
+
+
 async def prune(conn: AsyncConnection) -> None:
-    """Drop rate-limit rows older than two days so the table stays small."""
-    await conn.execute(delete(rate_events).where(rate_events.c.created_at < utcnow() - timedelta(days=2)))
+    """Housekeeping that enforces the privacy notice's retention promises.
+
+    - Rate-limit rows older than two days are dropped.
+    - Enquiries with no activity for 24 months are deleted, except "completed" ones,
+      which may relate to a transaction and are kept for legal record-keeping.
+    """
+    now = utcnow()
+    await conn.execute(delete(rate_events).where(rate_events.c.created_at < now - timedelta(days=2)))
+    stale = select(inquiries.c.id).where(
+        inquiries.c.updated_at < now - ENQUIRY_RETENTION, inquiries.c.status != "completed"
+    )
+    await conn.execute(delete(inquiry_events).where(inquiry_events.c.inquiry_id.in_(stale)))
+    await conn.execute(delete(inquiries).where(inquiries.c.id.in_(stale)))
 
 
 async def verify_turnstile(token: str, ip: str) -> None:

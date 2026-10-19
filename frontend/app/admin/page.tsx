@@ -8,6 +8,7 @@ import {SERVICE_LABELS,SERVICE_OPTIONS} from '@/lib/constants';
 import {StatsPanel} from '@/components/admin/stats-panel';
 import {InquiryDrawer} from '@/components/admin/inquiry-drawer';
 import {PasswordDialog} from '@/components/admin/password-dialog';
+import {RateBoard} from '@/components/admin/rate-board';
 import {EMAIL_META,STATUSES,STATUS_META,formatAmount,timeAgo} from '@/components/admin/meta';
 
 const PER_PAGE=20;
@@ -62,6 +63,8 @@ export default function AdminDashboard(){
     <div className="flex gap-2"><a href={exportUrl} className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-bold hover:border-amber-600"><Download size={16}/> Export CSV</a><button onClick={refreshAll} className="inline-flex items-center gap-2 rounded-full bg-midnight px-5 py-3 text-sm font-bold text-white hover:bg-ocean"><RefreshCw size={16} className={loading?'animate-spin':''}/> Refresh</button></div></div>
 
    <StatsPanel stats={stats} loading={!stats}/>
+
+   <RateBoard notify={notify} onUnauthorized={unauthorized}/>
 
    <div className="rounded-[26px] border border-slate-200 bg-white shadow-sm">
     <div className="border-b border-slate-100 p-5">

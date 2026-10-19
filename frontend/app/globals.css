@@ -35,6 +35,13 @@ body {background:#f7f9fb;color:#132436;font-feature-settings:'ss01','cv11';text-
 .prose-jkj h2 { color:#071425; font:700 1.5rem/1.25 var(--font-sans),Arial,sans-serif; margin:2.5rem 0 1rem; }
 .prose-jkj p { margin:.85rem 0; }
 .prose-jkj a {color:#a46b14;text-decoration:underline;}
+.prose-jkj ul {list-style:disc;padding-left:1.25rem;margin:.85rem 0;}
+.prose-jkj ul li {margin:.35rem 0;}
+.prose-jkj strong {color:#132436;}
+.prose-jkj table {width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem;line-height:1.6;}
+.prose-jkj th,.prose-jkj td {text-align:left;vertical-align:top;border-bottom:1px solid #e2e8f0;padding:.65rem .75rem .65rem 0;}
+.prose-jkj th {color:#071425;font-weight:700;}
+.prose-jkj .callout {background:#fff8ec;border:1px solid #f3d39a;border-radius:1rem;padding:1rem 1.25rem;color:#5c4210;}
 .container-art{position:relative;overflow:hidden;background:radial-gradient(ellipse at 70% 22%,#2b7490 0,transparent 50%),linear-gradient(145deg,#0b273e,#102c42 70%,#081321);}
 .container-art-sun{position:absolute;top:12%;right:13%;width:38%;aspect-ratio:1;border-radius:100%;background:radial-gradient(circle,#e9c17d88,transparent 70%);filter:blur(2px)}
 .container-art-grid{position:absolute;inset:0;opacity:.24;background:repeating-linear-gradient(0deg,transparent 0 38px,#a2d3d4 39px 40px)}

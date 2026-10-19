@@ -163,6 +163,20 @@ class AdminOut(BaseModel):
     last_login_at: datetime | None = None
 
 
+class RateBoardIn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    is_published: bool
+    cny_ngn: float | None = Field(default=None, gt=0, le=1_000_000)
+    usd_ngn: float | None = Field(default=None, gt=0, le=1_000_000)
+    note: str = Field(default="", max_length=240)
+
+    @field_validator("note")
+    @classmethod
+    def _note(cls, value: str) -> str:
+        return _clean(value)
+
+
 class DailyCount(BaseModel):
     date: str
     count: int

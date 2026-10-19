@@ -117,6 +117,23 @@ rate_events = Table(
 Index("rate_events_lookup_idx", rate_events.c.bucket, rate_events.c.key_hash, rate_events.c.created_at)
 
 
+# JKJ's own published rates (a single row, id=1), edited from the dashboard.
+rate_board = Table(
+    "rate_board",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("is_published", Boolean, nullable=False, default=False),
+    Column("cny_ngn", Numeric(18, 4), nullable=True),
+    Column("usd_ngn", Numeric(18, 4), nullable=True),
+    Column("note", String(240), nullable=False, default=""),
+    Column("updated_at", DateTime(timezone=True), nullable=True),
+    Column("updated_by", String(254), nullable=False, default=""),
+    CheckConstraint("id = 1", name="rate_board_single_row"),
+    CheckConstraint("cny_ngn IS NULL OR cny_ngn > 0", name="rate_board_cny_check"),
+    CheckConstraint("usd_ngn IS NULL OR usd_ngn > 0", name="rate_board_usd_check"),
+)
+
+
 _engine: AsyncEngine | None = None
 _schema_ready = False
 
