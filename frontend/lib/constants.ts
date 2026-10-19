@@ -1,4 +1,5 @@
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://jkj-exchange-service.vercel.app').replace(/\/$/, '');
+export const TAGLINE = 'Global Payments. Local Confidence.';
 export const BUSINESS = {
   name:'JKJ Exchange Services',
   whatsapp:'2348039622879',

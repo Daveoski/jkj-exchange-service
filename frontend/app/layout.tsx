@@ -1,10 +1,14 @@
 import type {Metadata,Viewport} from 'next';
-import {Fraunces,Manrope} from 'next/font/google';
+import {Cinzel,Fraunces,Manrope} from 'next/font/google';
 import './globals.css';
-import {BUSINESS,SITE_URL,services} from '@/lib/constants';
+import {BUSINESS,SITE_URL,TAGLINE,services} from '@/lib/constants';
 
 const display=Fraunces({subsets:['latin'],variable:'--font-display',display:'swap',axes:['opsz','SOFT']});
 const sans=Manrope({subsets:['latin'],variable:'--font-sans',display:'swap'});
+const brand=Cinzel({subsets:['latin'],variable:'--font-brand',display:'swap',weight:['600','700']});
+
+// Runs before first paint: saved choice, else the device setting. Prevents a theme flash.
+const themeInit=`(function(){var d=document.documentElement;d.classList.add('js');try{var t=localStorage.getItem('jkj-theme');if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';d.dataset.theme=t;d.style.colorScheme=t;}catch(e){d.dataset.theme='light';}})();`;
 
 export const metadata: Metadata={
   metadataBase:new URL(SITE_URL),
@@ -18,13 +22,16 @@ export const metadata: Metadata={
   robots:{index:true,follow:true},
   formatDetection:{telephone:false},
 };
-export const viewport:Viewport={width:'device-width',initialScale:1,themeColor:'#071425'};
+export const viewport:Viewport={width:'device-width',initialScale:1,themeColor:[{media:'(prefers-color-scheme: light)',color:'#ffffff'},{media:'(prefers-color-scheme: dark)',color:'#050b14'}]};
 
 const jsonLd={
   '@context':'https://schema.org',
   '@type':'FinancialService',
   name:BUSINESS.name,
   url:SITE_URL,
+  logo:SITE_URL+'/brand/jkj-logo.png',
+  image:SITE_URL+'/brand/jkj-logo.png',
+  slogan:TAGLINE,
   email:BUSINESS.email,
   telephone:BUSINESS.phoneInternational,
   areaServed:{'@type':'Country',name:'Nigeria'},
@@ -37,8 +44,8 @@ const jsonLd={
 };
 
 export default function RootLayout({children}:{children:React.ReactNode}){
- return <html lang="en" className={`${display.variable} ${sans.variable}`} suppressHydrationWarning>
-  <head><script dangerouslySetInnerHTML={{__html:"document.documentElement.classList.add('js')"}}/></head>
+ return <html lang="en" className={`${display.variable} ${sans.variable} ${brand.variable}`} suppressHydrationWarning>
+  <head><script dangerouslySetInnerHTML={{__html:themeInit}}/></head>
   <body className="font-sans antialiased">
    <a href="#main" className="sr-only z-[100] rounded-full bg-gold px-5 py-3 font-bold text-midnight focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Skip to content</a>
    {children}

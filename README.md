@@ -1,12 +1,14 @@
 # JKJ Exchange Services — Website & Enquiry Platform
 
-A premium, mobile-first corporate website for international supplier-payment **enquiries**, with a private admin dashboard and branded email notifications.
-**This site does not process payments, exchange currency or publish live exchange rates.**
+A premium, mobile-first corporate website for international supplier-payment **enquiries**, with a private admin dashboard, an exchange-rate pop-up, day/night themes and branded email notifications.
+*Global Payments. Local Confidence.*
+**This site does not process payments or exchange currency. Rates shown are indicative references only.**
 
 | | |
 |---|---|
 | Website | https://jkj-exchange-service.vercel.app |
 | Admin dashboard | https://jkj-exchange-service.vercel.app/admin |
+| QR code (print/download) | https://jkj-exchange-service.vercel.app/qr |
 | API health | https://jkj-exchange-api.vercel.app/api/v1/health |
 
 ## Architecture
@@ -35,10 +37,16 @@ The browser only ever talks to the website's own domain. That makes the admin se
 
 ## Features
 
+**Brand & themes**
+- JKJ globe-and-monogram logo in the header, footer, admin, emails, app icons and social image (`frontend/public/brand/`: transparent `jkj-emblem.png` / `jkj-logo.png`, plus `-dark` “platinum” variants for dark backgrounds). Wordmark set in Cinzel to echo the logo.
+- **Day** and **Night edition** themes: semantic colour tokens (`bg-surface`, `text-fg`, `text-muted`, `text-accent`, …) defined as CSS variables in `app/globals.css`. Follows the device setting until the visitor uses the sun/moon switch (saved in `localStorage`); the switch reveals the new theme with a circular View Transition. No flash of the wrong theme on load.
+
 **Public website**
-- Home, About, Services (RMB, USD, Alipay, WeChat Pay, bank transfer), How it works, Contact, Request a quote, Privacy, Terms.
+- Home, About, Services (RMB, USD, Alipay, WeChat Pay, bank transfer — each with audience, uses, preparation checklist, considerations and FAQs), How it works, Contact, Request a quote, QR code, Privacy, Terms.
+- **Exchange-rate pop-up**: opens once per visit, then lives in a “Rates today” pill. Mid-market reference rates (USD/CNY/GBP/EUR → NGN, USD → CNY) with 24-hour change, a quick naira estimate, and JKJ's own indicative rates when published from the dashboard. Data: open currency-api dataset (fallback: ExchangeRate-API open access), cached 30 min server-side and 5 min at the CDN.
+- **QR code** that opens the website: branded, high error-correction, verified to decode at print and footer sizes. `/qr` page with print, PNG card (`/qr.png`) and vector (`/qr.svg`) downloads. It encodes `NEXT_PUBLIC_SITE_URL` — regenerate printed codes if the domain changes.
 - Quote form with inline validation, service pre-selection (`/request-quote?service=usd`), honeypot, optional Cloudflare Turnstile, and a **reference number** (e.g. `JKJ-7K3F9Q`) on success.
-- WhatsApp / phone / email shortcuts everywhere, floating contact button.
+- WhatsApp / phone / email shortcuts everywhere (numbers shown in +234 format), floating contact button.
 - SEO: metadata per page, JSON-LD (`FinancialService`), sitemap, robots, generated Open Graph image, canonical URLs.
 - Accessibility: skip link, focus styles, ARIA on menus/dialogs/forms, reduced-motion support.
 
@@ -48,6 +56,7 @@ The browser only ever talks to the website's own domain. That makes the admin se
 - Inbox: search (name, email, phone, reference, company, message), filter by status and service, sort, pagination.
 - Detail drawer: one-tap WhatsApp / email / call, status pipeline, private notes, activity timeline (received, emails, status changes), delete.
 - CSV export (Excel-friendly, formula-injection safe).
+- **Rate board**: publish JKJ's indicative ₦ per ¥1 / ₦ per $1 with a note; toggle visibility on the website.
 - Change password (signs out every other session).
 - Email links open the enquiry directly (`/admin?inquiry=<id>`).
 
@@ -88,7 +97,7 @@ The browser only ever talks to the website's own domain. That makes the admin se
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Optional, pairs with the API's Turnstile secret |
 
 ### Email: verify a sending domain (important)
-Until a domain is verified in Resend, Resend only delivers to the Resend **account owner's** address, so alerts to other inboxes and customer confirmations are rejected (the dashboard shows "Some emails failed"). To enable all emails:
+The Resend account (API key “jideofork”) is owned by `jideofork@gmail.com`, so team alerts to that inbox are delivered. Until a domain is verified, Resend refuses every other recipient — so **customer confirmation emails are rejected** (the dashboard shows "Some emails failed"). To enable them:
 1. In Resend → **Domains**, add a domain JKJ owns and add the DNS records it shows.
 2. In Vercel (`jkj-exchange-api`), set `NOTIFICATION_FROM_EMAIL=JKJ Exchange Services <hello@that-domain>` and redeploy.
 
@@ -136,7 +145,7 @@ cd frontend && npm run typecheck && npm run build
 - [ ] Verify a sending domain in Resend and update `NOTIFICATION_FROM_EMAIL`.
 - [ ] Sign in to `/admin` and change the initial password.
 - [ ] Confirm all claims about JKJ's services are factual (no invented authorisations, rates, testimonials or turnaround times).
-- [ ] Have a Nigerian legal/compliance professional review cross-border payment wording, AML/KYC obligations and the NDPA privacy notice; finalise the **draft** privacy and terms pages.
+- [ ] Privacy notice and terms were rewritten against the NDPA 2023 (lawful bases, transfers, retention, rights, breach handling; AML/KYC, fraud warning, rate disclaimers, governing law). Have a Nigerian lawyer confirm them — in particular whether JKJ's activities or published rates need CBN authorisation, and the stated retention periods (24 months for enquiries, enforced automatically; completed records kept for AML purposes).
 - [ ] Optionally enable Cloudflare Turnstile (`NEXT_PUBLIC_TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET_KEY`, `REQUIRE_TURNSTILE=true`).
 - [ ] Connect a custom domain and update `FRONTEND_URL` and `NEXT_PUBLIC_SITE_URL`.
 - [ ] Confirm permission to use the supplied portrait and flyer.

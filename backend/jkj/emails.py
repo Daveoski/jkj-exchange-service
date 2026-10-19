@@ -53,6 +53,7 @@ def _whatsapp_for(phone: str, name: str) -> str:
 
 
 def _layout(preheader: str, body: str) -> str:
+    emblem = escape(f"{get_settings().public_site_url}/brand/jkj-emblem-dark.png", quote=True)
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light"><title>JKJ Exchange Services</title></head>
@@ -63,13 +64,14 @@ def _layout(preheader: str, body: str) -> str:
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;background:#ffffff;border-radius:20px;overflow:hidden;">
 <tr><td style="background:{MIDNIGHT};padding:28px 32px;">
 <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-<td style="background:{GOLD};color:{MIDNIGHT};font-weight:900;font-size:15px;letter-spacing:-0.5px;padding:10px 11px;border-radius:10px;">JKJ</td>
-<td style="padding-left:12px;color:#ffffff;font-weight:800;font-size:15px;letter-spacing:1px;">JKJ <span style="color:{GOLD};">EXCHANGE</span><br>
-<span style="color:#9fb0c2;font-size:10px;letter-spacing:4px;font-weight:600;">SERVICES</span></td>
+<td style="vertical-align:middle;"><img src="{emblem}" width="64" height="48" alt="JKJ" style="display:block;border:0;"></td>
+<td style="padding-left:12px;vertical-align:middle;color:#ffffff;font-family:Georgia,serif;font-weight:700;font-size:16px;letter-spacing:1.5px;">JKJ <span style="color:{GOLD};">EXCHANGE</span><br>
+<span style="color:#9fb0c2;font-family:Helvetica,Arial,sans-serif;font-size:10px;letter-spacing:4px;font-weight:600;">SERVICES</span></td>
 </tr></table></td></tr>
+<tr><td style="height:2px;background:linear-gradient(90deg,{MIDNIGHT},{GOLD},{MIDNIGHT});background-color:{GOLD};font-size:0;line-height:0;">&nbsp;</td></tr>
 <tr><td style="padding:32px;">{body}</td></tr>
 <tr><td style="background:#f6f8fa;padding:22px 32px;font-size:12px;line-height:20px;color:{MUTED};">
-JKJ Exchange Services &middot; Nigeria &middot; International supplier-payment enquiries<br>
+<strong style="color:{INK};">JKJ Exchange Services</strong> &middot; Global Payments. Local Confidence.<br>
 WhatsApp {WHATSAPP_DISPLAY} &middot; Call {PHONE_DISPLAY}<br>
 No payments are processed by email or on our website. JKJ will never ask for your passwords, PINs or card numbers.
 </td></tr>
