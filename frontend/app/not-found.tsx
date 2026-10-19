@@ -1,0 +1,2 @@
+import Link from 'next/link';
+export default function NotFound(){return <div className="flex min-h-screen flex-col items-center justify-center bg-midnight px-5 text-center text-white"><p className="text-sm font-bold tracking-widest text-gold">404 · PAGE NOT FOUND</p><h1 className="mt-5 font-display text-5xl">This route isn't on the map.</h1><p className="mt-5 text-slate-300">Return to JKJ Exchange Services and discover your next step.</p><Link href="/" className="mt-8 rounded-full bg-gold px-7 py-4 font-bold text-midnight">Back to homepage</Link></div>}
